@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie Finder</title>
+</head>
+<body>
+  <h1>Movie Finder</h1>
+
+  <input type="text" id="titleInput" placeholder="Название фильма (на английском)" />
+  <button id="searchBtn">Search Movie</button>
+
+  <p id="status"></p>
+
+  <div id="result" hidden>
+    <h2 id="titleYear"></h2>
+    <p id="rating"></p>
+    <p id="plot"></p>
+    <button id="watchBtn">Add to Watchlist</button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
