@@ -16,6 +16,10 @@ let currentMovie = null;
 async function searchMovie() {
   const title = titleInput.value.trim();
 
+  if (!API_KEY) {
+    statusEl.textContent = 'Ошибка: API-ключ не найден (проверьте файл .env)';
+    return;
+  }
   if (!title) {
     statusEl.textContent = 'Введите название фильма';
     return;
@@ -23,6 +27,8 @@ async function searchMovie() {
 
   statusEl.textContent = 'Загрузка...';
   resultEl.hidden = true;
+  currentMovie = null;          // сбрасываем старый результат
+  searchBtn.disabled = true;    // защита от повторных кликов
 
   try {
     const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(title)}`;
@@ -40,13 +46,15 @@ async function searchMovie() {
 
     currentMovie = data;
     titleYear.textContent = `${data.Title} (${data.Year})`;
-    ratingEl.textContent  = `Rating: ${data.imdbRating}`;
+    ratingEl.textContent  = `Rating: ${data.imdbRating !== 'N/A' ? data.imdbRating : 'нет данных'}`;
     plotEl.textContent    = data.Plot;
 
     resultEl.hidden = false;
     statusEl.textContent = '';
   } catch (error) {
     statusEl.textContent = `Ошибка: ${error.message}`;
+  } finally {
+    searchBtn.disabled = false;
   }
 }
 
@@ -59,6 +67,8 @@ async function addToWatchlist() {
     year: currentMovie.Year,
     rating: currentMovie.imdbRating
   };
+
+  watchBtn.disabled = true;
 
   try {
     const response = await fetch(WATCHLIST_URL, {
@@ -74,8 +84,13 @@ async function addToWatchlist() {
     statusEl.textContent = `"${currentMovie.Title}" добавлен в Watchlist`;
   } catch (error) {
     statusEl.textContent = `Не удалось сохранить: ${error.message}`;
+  } finally {
+    watchBtn.disabled = false;
   }
 }
 
 searchBtn.addEventListener('click', searchMovie);
+titleInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') searchMovie();   // поиск по Enter
+});
 watchBtn.addEventListener('click', addToWatchlist);
